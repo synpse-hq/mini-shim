@@ -8,7 +8,7 @@ Normally mini-shim would be deployed next to the application, proxying all reque
 
 ```yaml
 name: homeassistant
-description: Home Assistant with Webhook Relay tunnel. (https://kr-homelab.webrelay.io)
+description: Home Assistant with Webhook Relay tunnel and mini-shim for CORS
 scheduling:
   type: Conditional
   selectors:
