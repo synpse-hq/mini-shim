@@ -1,0 +1,4 @@
+FROM arm32v6/alpine:3.8
+ADD ca-certificates.crt /etc/ssl/certs/
+COPY release/arm/mini-shim /mini-shim
+ENTRYPOINT ["/mini-shim"]
