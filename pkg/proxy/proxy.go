@@ -43,13 +43,18 @@ func (p *Proxy) Serve(ctx context.Context) error {
 		return fmt.Errorf("failed to parse upstream address: %w", err)
 	}
 
+	rp := httputil.NewSingleHostReverseProxy(u)
+
 	r := mux.NewRouter()
 	r.Use(handlers.CompressHandler)
 	if len(p.cfg.AllowedOrigins) > 0 {
 		r.Use(p.cors())
-	}
 
-	rp := httputil.NewSingleHostReverseProxy(u)
+		rp.ModifyResponse = func(resp *http.Response) error {
+			resp.Header.Del(corsAllowOriginHeader)
+			return nil
+		}
+	}
 
 	r.PathPrefix("/").Handler(rp)
 
@@ -69,13 +74,17 @@ func (p *Proxy) Serve(ctx context.Context) error {
 	return p.server.ListenAndServe()
 }
 
+const (
+	corsAllowOriginHeader = "Access-Control-Allow-Origin"
+)
+
 func (p *Proxy) cors() func(http.Handler) http.Handler {
 	fmt.Println("setting up CORS allowed origins", p.cfg.AllowedOrigins)
 	origins := strings.Join(p.cfg.AllowedOrigins, ",")
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			w.Header().Set("Access-Control-Allow-Origin", origins)
+			w.Header().Set(corsAllowOriginHeader, origins)
 
 			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 			w.Header().Set("Access-Control-Allow-Headers",
