@@ -1,4 +1,4 @@
-module github.com/synpse-hq/cors-shim
+module github.com/synpse-hq/mini-shim
 
 go 1.16
 

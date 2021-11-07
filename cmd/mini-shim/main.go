@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/synpse-hq/cors-shim/pkg/proxy"
+	"github.com/synpse-hq/mini-shim/pkg/proxy"
 )
 
 func main() {
