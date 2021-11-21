@@ -1,19 +1,17 @@
 FROM golang:buster AS go-build-env
+
 WORKDIR /app
 
-RUN apt-get update
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get install -y ca-certificates
-
 COPY . .
-ENV GOPROXY="direct"
-RUN  go mod download
+RUN go mod download
 
 ARG TARGETARCH
-RUN GOARCH=$TARGETARCH go build -o /release/mini-shim ./cmd/mini-shim
+RUN CGO_ENABLED=0 GOARCH=$TARGETARCH go build -o /app/app ./cmd/mini-shim
 
 FROM quay.io/synpse/alpine:3.9
 RUN apk --update add ca-certificates
 
-COPY --from=go-build-env /release/mini-shim /mini-shim
-ENTRYPOINT ["/mini-shim"]
+COPY --from=go-build-env /app/app /bin/
+RUN chmod +x /bin/app
+
+ENTRYPOINT ["/bin/app"]

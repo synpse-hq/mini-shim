@@ -1,5 +1,5 @@
-LDFLAGS		+= -s -w
+APP_REPO ?= quay.io/synpse/mini-shim
 
-buildx-image:
-	docker buildx create --use && \
-	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t quay.io/synpse/mini-shim --push -f Dockerfile .
+.PHONY: image
+image:
+	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t ${APP_REPO}:latest --push -f Dockerfile .
